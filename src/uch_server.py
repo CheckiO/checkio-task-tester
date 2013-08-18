@@ -1,4 +1,5 @@
 import json
+import os
 
 from twisted.internet.protocol import ServerFactory
 from twisted.protocols import basic
@@ -28,7 +29,7 @@ class CenterUchProtocol(basic.LineReceiver):
     pid = None
     predicted_death = False
 
-    def kill_me():
+    def kill_me(self):
         self.predicted_death = True
 
         import signal

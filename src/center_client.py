@@ -1,6 +1,7 @@
 import json
 import codecs
 import os
+import sys
 import base64
 from uuid import uuid4
 import warnings
@@ -38,6 +39,10 @@ class CenterClientProtocol(basic.LineReceiver):
         print 'CENTER GET:', raw_data
         data = json.loads(raw_data)
         getattr(self, 'do_'+data['do'])(data)
+
+    def do_auth_error(self, data):
+        warnings.warn(data['error'])
+        reactor.stop()
 
     def do_get_files(self, data):
         ret = {}
