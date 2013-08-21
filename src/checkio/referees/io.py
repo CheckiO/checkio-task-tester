@@ -21,7 +21,7 @@ class CheckiOReferee(object):
                  cover_code=None,
                  checker=None,
                  inspector=None,
-                 add_close_buildins=None,
+                 add_close_builtins=None,
                  add_allowed_modules=None,
                  remove_allowed_modules=None, ):
 
@@ -29,7 +29,7 @@ class CheckiOReferee(object):
         self.categories_names = sorted(list(tests.keys()))
         self.checker = checker
         self.inspector = inspector
-        self.add_close_buildins = add_close_buildins
+        self.add_close_builtins = add_close_builtins
         self.add_allowed_modules = add_allowed_modules
         self.remove_allowed_modules = remove_allowed_modules
         self.cover_code = cover_code or {}
@@ -52,7 +52,7 @@ class CheckiOReferee(object):
                          controller_type=SIMPLE,
                          callback=self.run_success,
                          errback=self.fail_cur_step,
-                         add_close_buildins=self.add_close_buildins,
+                         add_close_builtins=self.add_close_builtins,
                          add_allowed_modules=self.add_allowed_modules,
                          remove_allowed_modules=self.remove_allowed_modules,
                          write_execute_data=True,

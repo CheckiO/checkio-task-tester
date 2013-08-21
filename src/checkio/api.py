@@ -32,7 +32,7 @@ def add_process_listener(prefix, signal, callback):
 
 def start_runner(code, runner, controller_type, callback, \
     prefix=DEFAULT_RUNNER_PREFIX, errback=None,\
-    add_close_buildins=None, add_allowed_modules=None, remove_allowed_modules=None,
+    add_close_builtins=None, add_allowed_modules=None, remove_allowed_modules=None,
     write_execute_data=False, cover_code=None, name='__check__'):
     wcode = add_waiter(callback, errback)
     echo.send_json({
@@ -44,7 +44,7 @@ def start_runner(code, runner, controller_type, callback, \
         'type': controller_type,
         'name': name,
         'env_config':{
-            'add_close_buildins': add_close_buildins,
+            'add_close_builtins': add_close_builtins,
             'add_allowed_modules': add_allowed_modules,
             'remove_allowed_modules': remove_allowed_modules,
             'cover_code': cover_code
