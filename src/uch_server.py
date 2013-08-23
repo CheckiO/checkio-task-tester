@@ -3,13 +3,13 @@ import os
 
 from twisted.internet.protocol import ServerFactory
 from twisted.protocols import basic
-from twisted.internet import  reactor, protocol
-
+from twisted.internet import reactor, protocol
 
 
 class UchControl(protocol.ProcessProtocol):
     def get_con(self):
         from runner import CON
+
         return CON
 
     def outReceived(self, data):
@@ -18,9 +18,8 @@ class UchControl(protocol.ProcessProtocol):
     def errReceived(self, data):
         print 'UCH ERR', data
 
-    def processEnded(self,reason):
+    def processEnded(self, reason):
         print 'UCH ENDED:', reason
-
 
 
 class CenterUchProtocol(basic.LineReceiver):
@@ -33,21 +32,23 @@ class CenterUchProtocol(basic.LineReceiver):
         self.predicted_death = True
 
         import signal
+
         os.kill(self.pid, signal.SIGKILL)
 
     def get_con(self):
         from center_client import CON
+
         return CON
 
     def lineReceived(self, line):
         print "UCH CONNECTION GOT:", line
         data = json.loads(line)
-        method = getattr(self, 'do_'+data['do'],None)
+        method = getattr(self, 'do_' + data['do'], None)
         if method is not None:
             method(data)
         else:
             con = self.get_con()
-            con.sendLine('{"do":"from_process", "data":'+line+'}')
+            con.sendLine('{"do":"from_process", "data":' + line + '}')
 
     def do_connect(self, data):
         con = self.get_con()
@@ -61,7 +62,7 @@ class CenterUchProtocol(basic.LineReceiver):
         })
 
 
-    def sendData(self,line):
+    def sendData(self, line):
         print "UCH CONNECTION SEND:", line
         return self.sendLine(json.dumps(line))
 
@@ -78,8 +79,5 @@ class CenterUchProtocol(basic.LineReceiver):
         })
 
 
-
-
-
 class CenterUchFactory(ServerFactory):
-    protocol  = CenterUchProtocol
+    protocol = CenterUchProtocol

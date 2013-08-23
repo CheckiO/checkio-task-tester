@@ -68,7 +68,6 @@ class CheckiOReferee(object):
     def test_current_step(self):
         self.current_test = self.get_current_test()
 
-
         api.execute_function(input_data=self.current_test["input"],
                              callback=self.check_current_test,
                              errback=self.fail_cur_step)
