@@ -37,10 +37,6 @@ class CheckiOReferee(object):
     def on_ready(self, data):
         self.code = data['code']
         self.runner = data['runner']
-        if self.inspector:
-            result, result_message = self.inspector(self.code, self.runner)
-            if not result:
-                api.fail(0, result_message)
         self.start_env()
 
         api.add_process_listener(REQ, PROCESS_ENDED, self.process_req_ended)
@@ -79,6 +75,14 @@ class CheckiOReferee(object):
         return self.tests[self.current_category][self.current_test_index]
 
     def check_current_test(self, data):
+        if self.inspector:
+            inspector_result, inspector_result_addon = self.inspector(self.code, self.runner)
+            self.inspector = None
+            self.current_test["inspector_result_addon"] = inspector_result_addon
+            if not inspector_result:
+                self.current_test["inspector_fail"] = True
+                api.request_write_ext(self.current_test)
+                return api.fail(0, inspector_result_addon)
         user_result = data['result']
 
         check_result = self.check_user_answer(user_result)
