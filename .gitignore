@@ -35,3 +35,5 @@ nosetests.xml
 .pydevproject
 twistd.pid
 src/settings_local.py
+
+Vagrant*
