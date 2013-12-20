@@ -134,7 +134,7 @@ class CenterClientProtocol(basic.LineReceiver):
         self.service.sendData(data['data'])
 
     def truncate_output(self, data):
-        if S.TRUNC_OUTPUT=='False':
+        if S.TRUNC_OUTPUT:
             return data
         output = {}
         keys = data.keys()

@@ -9,7 +9,7 @@ TESTER_KEY = 'overwrite it in settings_local.py'
 CENTER_FOLDER = 'overwrite it in settings_local.py'
 REPO_FOLDER = 'overwrite it in settings_local.py'
 
-TRUNC_OUTPUT = True
+TRUNC_OUTPUT = False
 
 try:
     from settings_local import *
