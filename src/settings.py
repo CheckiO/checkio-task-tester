@@ -9,6 +9,8 @@ TESTER_KEY = 'overwrite it in settings_local.py'
 CENTER_FOLDER = 'overwrite it in settings_local.py'
 REPO_FOLDER = 'overwrite it in settings_local.py'
 
+SHOW_FULL_LOGS = False
+
 try:
     from settings_local import *
 except ImportError:
