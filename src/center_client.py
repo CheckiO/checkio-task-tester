@@ -15,6 +15,16 @@ from uch_server import UchControl
 
 CON = None
 
+#------------------------------------------------------#
+#LIMIT: number of characters to remain in output string#
+#ignore_arguments: keys of output data that will be    #
+# ignored while truncating itself.                     #
+#------------------------------------------------------#
+LIMIT = 30 
+ignore_arguments = [
+                    'folder', 'key', 'path',
+                    'question', 'error', 'do'
+                    ]
 
 class CenterClientProtocol(basic.LineReceiver):
     delimiter = '\0'
@@ -123,8 +133,21 @@ class CenterClientProtocol(basic.LineReceiver):
     def do_to_process(self, data):
         self.service.sendData(data['data'])
 
+    def truncate_output(self, data):
+        if S.TRUNC_OUTPUT=='False':
+            return data
+        output = {}
+        keys = data.keys()
+        for key in keys:
+            if not key in ignore_arguments and len(data[key]) > 2*LIMIT:
+                output.update({key: ' ...output truncated... '.join([data[key][:LIMIT], data[key][-LIMIT:]])})
+            else:
+                output.update({key: data[key]})
+        return output
+
     def sendData(self, line):
-        print 'CENTER SEND:', line
+        output_line = self.truncate_output(line)
+        print 'CENTER SEND:', output_line
         return self.sendLine(json.dumps(line))
 
 
