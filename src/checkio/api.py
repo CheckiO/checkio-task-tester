@@ -1,5 +1,5 @@
-import echo
 from checkio.signals import LISTENERS, WAITERS, ERR_WAITERS, PROCESS_LISTENERS
+import echo
 
 DEFAULT_RUNNER_PREFIX = 'req'
 DEFAULT_FUNCTION = 'checkio'
@@ -33,8 +33,8 @@ def add_process_listener(prefix, signal, callback):
     })
 
 
-def start_runner(code, runner, controller_type, callback, \
-                 prefix=DEFAULT_RUNNER_PREFIX, errback=None, \
+def start_runner(code, runner, controller_type, callback,
+                 prefix=DEFAULT_RUNNER_PREFIX, errback=None,
                  add_close_builtins=None, add_allowed_modules=None, remove_allowed_modules=None,
                  write_execute_data=False, cover_code=None, name='__check__'):
     wcode = add_waiter(callback, errback)
@@ -59,6 +59,18 @@ def start_runner(code, runner, controller_type, callback, \
     return wcode
 
 
+def sys_runner(code, callback,
+               prefix=DEFAULT_RUNNER_PREFIX, errback=None):
+    wcode = add_waiter(callback, errback)
+    echo.send_json({
+        'do': 'sys_runner',
+        'waiter': wcode,
+        'code': code,
+        'prefix': prefix
+    })
+    return wcode
+
+
 def kill_runner(prefix):
     echo.send_json({
         'do': 'kill_runner',
@@ -66,8 +78,7 @@ def kill_runner(prefix):
     })
 
 
-def execute_function(input_data, callback, func=DEFAULT_FUNCTION, prefix=DEFAULT_RUNNER_PREFIX,
-                     errback=None):
+def execute_function(input_data, callback, func=DEFAULT_FUNCTION, prefix=DEFAULT_RUNNER_PREFIX, errback=None):
     wcode = add_waiter(callback, errback)
     echo.send_json({
         'do': 'execute_function',
