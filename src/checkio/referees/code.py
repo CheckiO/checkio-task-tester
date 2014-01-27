@@ -27,12 +27,14 @@ class CheckiORefereeCode(CheckiOReferee):
 
     def test_current_step(self):
         self.current_test = self.get_current_test()
-
+        self.current_test["runner"] = self.runner
+        api.request_write_in(self.current_test["show"][self.runner], REQ)
         api.sys_runner(code=self.current_test["test_code"].get(self.runner),
                        callback=self.check_current_test,
                        errback=self.fail_cur_step)
 
     def check_current_test(self, data):
+
         if self.inspector:
             inspector_result, inspector_result_addon = self.inspector(self.code, self.runner)
             self.inspector = None
@@ -42,9 +44,10 @@ class CheckiORefereeCode(CheckiOReferee):
                 api.request_write_ext(self.current_test)
                 return api.fail(0, inspector_result_addon)
 
-        self.current_test["runner"] = self.runner
 
-        check_result = self.check_user_answer(data["result"])
+        test_result = data["result"]
+        self.current_test.update(test_result)
+        check_result = self.check_user_answer(test_result)
 
         self.current_test["result"], self.current_test["result_addon"] = check_result
 
@@ -61,7 +64,7 @@ class CheckiORefereeCode(CheckiOReferee):
             else:
                 api.success()
 
-    def check_user_answer(self, data, test_data):
+    def check_user_answer(self, data):
         if self.check_result:
             return self.check_result(data, self.current_test)
         else:
