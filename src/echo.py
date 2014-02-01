@@ -21,7 +21,6 @@ def send_json(data):
 
 def _receive_sock(trys=4):
     sock = echo.get_socket()
-    sock.settimeout(12000000)
     try:
         return sock.recv(100000000).decode('utf-8')
     except socket.error as e:
