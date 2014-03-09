@@ -22,7 +22,8 @@ class CheckiORefereeMulti(object):
                  inspector=None,
                  add_close_builtins=None,
                  add_allowed_modules=None,
-                 remove_allowed_modules=None, ):
+                 remove_allowed_modules=None,
+                 function_name=None):
 
         self.tests = tests
         self.initial_referee = initial_referee
@@ -34,6 +35,7 @@ class CheckiORefereeMulti(object):
         self.add_allowed_modules = add_allowed_modules
         self.remove_allowed_modules = remove_allowed_modules
         self.cover_code = cover_code or {}
+        self.function_name = function_name
 
         self.referee_data = {
             "input": "",
@@ -75,9 +77,12 @@ class CheckiORefereeMulti(object):
 
     def test_current_step(self):
         self.current_step += 1
-        api.execute_function(input_data=self.referee_data["input"],
-                             callback=self.check_current_test,
-                             errback=self.fail_cur_step)
+        function_data = {"input_data": self.referee_data["input"],
+                         "callback": self.check_current_test,
+                         "errback": self.fail_cur_step}
+        if self.function_name:
+            function_data["func"] = self.function_name
+        api.execute_function(**function_data)
 
     def get_current_env_name(self):
         return self.categories_names[self.current_category_index]

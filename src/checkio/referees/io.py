@@ -23,7 +23,8 @@ class CheckiOReferee(object):
                  inspector=None,
                  add_close_builtins=None,
                  add_allowed_modules=None,
-                 remove_allowed_modules=None, ):
+                 remove_allowed_modules=None,
+                 function_name=None):
 
         self.tests = tests
         self.categories_names = sorted(list(tests.keys()))
@@ -33,6 +34,7 @@ class CheckiOReferee(object):
         self.add_allowed_modules = add_allowed_modules
         self.remove_allowed_modules = remove_allowed_modules
         self.cover_code = cover_code or {}
+        self.function_name = function_name
 
     def on_ready(self, data):
         self.code = data['code']
@@ -63,10 +65,12 @@ class CheckiOReferee(object):
 
     def test_current_step(self):
         self.current_test = self.get_current_test()
-
-        api.execute_function(input_data=self.current_test["input"],
-                             callback=self.check_current_test,
-                             errback=self.fail_cur_step)
+        function_data = {"input_data": self.current_test["input"],
+                         "callback": self.check_current_test,
+                         "errback": self.fail_cur_step}
+        if self.function_name:
+            function_data["func"] = self.function_name
+        api.execute_function(**function_data)
 
     def get_current_env_name(self):
         return self.categories_names[self.current_category_index]
