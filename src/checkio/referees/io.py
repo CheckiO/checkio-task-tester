@@ -2,6 +2,7 @@ from checkio.signals import PROCESS_ENDED
 from checkio import api
 
 from checkio.runner_types import SIMPLE
+from checkio.api import DEFAULT_FUNCTION
 
 REQ = 'req'
 REFEREE = 'referee'
@@ -24,7 +25,7 @@ class CheckiOReferee(object):
                  add_close_builtins=None,
                  add_allowed_modules=None,
                  remove_allowed_modules=None,
-                 function_name=None):
+                 function_name=DEFAULT_FUNCTION):
 
         self.tests = tests
         self.categories_names = sorted(list(tests.keys()))
@@ -65,12 +66,10 @@ class CheckiOReferee(object):
 
     def test_current_step(self):
         self.current_test = self.get_current_test()
-        function_data = {"input_data": self.current_test["input"],
-                         "callback": self.check_current_test,
-                         "errback": self.fail_cur_step}
-        if self.function_name:
-            function_data["func"] = self.function_name
-        api.execute_function(**function_data)
+        api.execute_function(input_data=self.current_test["input"],
+                             callback=self.check_current_test,
+                             errback=self.fail_cur_step,
+                             func=self.function_name)
 
     def get_current_env_name(self):
         return self.categories_names[self.current_category_index]
