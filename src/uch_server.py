@@ -33,7 +33,7 @@ class CenterUchProtocol(basic.LineReceiver):
 
         import signal
 
-        os.kill(self.pid, signal.SIGKILL)
+        os.kill(self.pid, signal.SIGTERM)
 
     def get_con(self):
         from center_client import CON
