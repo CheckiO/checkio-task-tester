@@ -10,7 +10,7 @@ REFEREE = 'referee'
 
 class CheckiOReferee(object):
     current_category_index = 0
-    current_category = ""
+    current_category = "undefined"
     current_test = {}
     current_step = 0
     current_test_index = 0
@@ -135,7 +135,12 @@ class CheckiOReferee(object):
         api.fail(self.current_step, self.get_current_test_fullname())
 
     def get_current_test_fullname(self):
+        try:
+            tests_len = len(self.tests[self.current_category])
+        except KeyError:
+            tests_len = 0
+
         return "Category: {0}. Test {1} from {2}".format(
             self.current_category,
             self.current_test_index + 1,
-            len(self.tests[self.current_category]))
+            tests_len)
