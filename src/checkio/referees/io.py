@@ -10,7 +10,7 @@ REFEREE = 'referee'
 
 class CheckiOReferee(object):
     current_category_index = 0
-    current_category = "undefined"
+    current_category = "Undefined"
     current_test = {}
     current_step = 0
     current_test_index = 0
