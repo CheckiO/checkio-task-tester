@@ -10,7 +10,7 @@ SERVICE_PORT = int(sys.argv[3])
 
 echo.init('127.0.0.1', SERVICE_PORT)
 
-sys.path.append(os.getenv('FOLDER_USER'))
+sys.path.insert(0, os.getenv('FOLDER_USER'))
 
 import referee
 import checkio.signals as S
