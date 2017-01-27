@@ -10,8 +10,8 @@ from twisted.internet.protocol import ClientFactory
 from twisted.protocols import basic
 from twisted.internet import reactor
 
-import settings as S
-from uch_server import UchControl
+import checkio_task_tester.settings as S
+from checkio_task_tester.uch_server import UchControl
 
 CON = None
 
@@ -20,23 +20,24 @@ CON = None
 #ignore_arguments: keys of output data that will be    #
 # ignored while truncating itself.                     #
 #------------------------------------------------------#
-LIMIT = 30 
+#LIMIT = 30 
 ignore_arguments = [
                     'folder', 'key', 'path',
                     'question', 'error', 'do'
                     ]
 
 class CenterClientProtocol(basic.LineReceiver):
-    delimiter = '\0'
+    delimiter = str.encode('\0')
     MAX_LENGTH = 10000000
     service = None
 
     def connectionMade(self):
+        print('Connected.')
         global CON
         CON = self
 
         self.sendData({
-            'folder': S.CENTER_FOLDER,
+            #'folder': S.CENTER_FOLDER,
             'key': S.TESTER_KEY,
             'do': 'connect'
         })
@@ -45,8 +46,8 @@ class CenterClientProtocol(basic.LineReceiver):
         self.service = service
 
     def lineReceived(self, raw_data):
-        print 'CENTER GET:', raw_data
-        data = json.loads(raw_data)
+        print('CENTER GET:', raw_data)
+        data = json.loads(raw_data.decode('utf8'))
         getattr(self, 'do_' + data['do'])(data)
 
     def do_auth_error(self, data):
@@ -64,7 +65,7 @@ class CenterClientProtocol(basic.LineReceiver):
                 fh = codecs.open(folder_path, "r", "utf-8")
                 ret[file_path] = fh.read()
                 fh.close()
-            except IOError, e:
+            except IOError as e:
                 warnings.warn('Error during oppening file "' + folder_path + '" :' + str(e))
                 continue
 
@@ -88,7 +89,7 @@ class CenterClientProtocol(basic.LineReceiver):
             fh = open(folder_path, "rb")
             fdata = fh.read()
             fh.close()
-        except IOError, e:
+        except IOError as e:
             warnings.warn('Error during oppening file "' + folder_path + '" :' + str(e))
             self.sendData({
                 'do': 'answer',
@@ -97,10 +98,9 @@ class CenterClientProtocol(basic.LineReceiver):
                 'path': data['path']
             })
             return
-
         self.sendData({
             'do': 'answer',
-            'data': base64.standard_b64encode(fdata),
+            'data': base64.standard_b64encode(fdata).decode('utf8'),
             'question': data['question'],
             'path': data['path']
         })
@@ -110,10 +110,9 @@ class CenterClientProtocol(basic.LineReceiver):
         self.runner = data['runner']
         self.connection_id = data['connection_id']
         self.task_num = data['task_num']
-
         reactor.spawnProcess(UchControl(),
                              S.PYTHON_3,
-                             args=[S.PYTHON_3, "uch.py",
+                             args=[S.PYTHON_3, S.UCH_FILE,
                                    str(self.connection_id),
                                    str(self.task_num),
                                    str(S.CENTER_UCH_PORT)],
@@ -133,22 +132,22 @@ class CenterClientProtocol(basic.LineReceiver):
     def do_to_process(self, data):
         self.service.sendData(data['data'])
 
-    def truncate_output(self, data):
-        if S.SHOW_FULL_LOGS:
-            return data
-        output = {}
-        keys = data.keys()
-        for key in keys:
-            if not key in ignore_arguments and len(data[key]) > 2*LIMIT:
-                output.update({key: ' ...output truncated... '.join([data[key][:LIMIT], data[key][-LIMIT:]])})
-            else:
-                output.update({key: data[key]})
-        return output
+    # def truncate_output(self, data):
+    #     if S.SHOW_FULL_LOGS:
+    #         return data
+    #     output = {}
+    #     keys = data.keys()
+    #     for key in keys:
+    #         if not key in ignore_arguments and len(data[key]) > 2*LIMIT:
+    #             output.update({key: ' ...output truncated... '.join([data[key][:LIMIT], data[key][-LIMIT:]])})
+    #         else:
+    #             output.update({key: data[key]})
+    #     return output
 
     def sendData(self, line):
-        output_line = self.truncate_output(line)
-        print 'CENTER SEND:', output_line
-        return self.sendLine(json.dumps(line))
+        #output_line = self.truncate_output(line)
+        print('CENTER SEND:', line)
+        return self.sendLine(str.encode(json.dumps(line)))
 
 
 class CenterClientFactory(ClientFactory):

@@ -8,22 +8,22 @@ from twisted.internet import reactor, protocol
 
 class UchControl(protocol.ProcessProtocol):
     def get_con(self):
-        from runner import CON
+        from checkio_task_tester.runner import CON
 
         return CON
 
     def outReceived(self, data):
-        print 'UCH OUT:', data
+        print(data.decode('utf8'))
 
     def errReceived(self, data):
-        print 'UCH ERR', data
+        print(data.decode('utf8'))
 
     def processEnded(self, reason):
-        print 'UCH ENDED:', reason
+        pass
 
 
 class CenterUchProtocol(basic.LineReceiver):
-    delimiter = '\0'
+    delimiter = b'\0'
     MAX_LENGTH = 10000000
     pid = None
     predicted_death = False
@@ -36,19 +36,19 @@ class CenterUchProtocol(basic.LineReceiver):
         os.kill(self.pid, signal.SIGTERM)
 
     def get_con(self):
-        from center_client import CON
+        from  checkio_task_tester.center_client import CON
 
         return CON
 
     def lineReceived(self, line):
-        print "UCH CONNECTION GOT:", line
-        data = json.loads(line)
+        #print "UCH CONNECTION GOT:", line
+        data = json.loads(line.decode('utf8'))
         method = getattr(self, 'do_' + data['do'], None)
         if method is not None:
             method(data)
         else:
             con = self.get_con()
-            con.sendLine('{"do":"from_process", "data":' + line + '}')
+            con.sendLine(b'{"do":"from_process", "data":' + line + b'}')
 
     def do_connect(self, data):
         con = self.get_con()
@@ -63,11 +63,11 @@ class CenterUchProtocol(basic.LineReceiver):
 
 
     def sendData(self, line):
-        print "UCH CONNECTION SEND:", line
-        return self.sendLine(json.dumps(line))
+        #print "UCH CONNECTION SEND:", line
+        return self.sendLine(str.encode(json.dumps(line)))
 
     def connectionLost(self, reason):
-        print 'Service Connection Lost'
+        #print 'Service Connection Lost'
         con = self.get_con()
         con.service = None
 

@@ -58,9 +58,8 @@ def start_runner(code, runner, controller_type, callback,
     })
     return wcode
 
-
 def sys_runner(code, callback,
-               prefix=DEFAULT_RUNNER_PREFIX, errback=None):
+                 prefix=DEFAULT_RUNNER_PREFIX, errback=None):
     wcode = add_waiter(callback, errback)
     echo.send_json({
         'do': 'sys_runner',

@@ -1,8 +1,8 @@
 from checkio.signals import PROCESS_ENDED
 from checkio import api
+from checkio.api import DEFAULT_FUNCTION
 
 from checkio.runner_types import SIMPLE
-from checkio.api import DEFAULT_FUNCTION
 
 REQ = 'req'
 REFEREE = 'referee'

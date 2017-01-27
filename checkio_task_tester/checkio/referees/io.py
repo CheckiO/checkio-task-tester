@@ -1,8 +1,9 @@
 from checkio.signals import PROCESS_ENDED
 from checkio import api
-
-from checkio.runner_types import SIMPLE
 from checkio.api import DEFAULT_FUNCTION
+
+from checkio.runner_types import SIMPLE, JS_RUNNER_SLUG
+
 
 REQ = 'req'
 REFEREE = 'referee'
@@ -38,10 +39,21 @@ class CheckiOReferee(object):
         self.function_name = function_name
 
     def on_ready(self, data):
+        self.seed = data.get('seed', 0)
         self.code = data['code']
         self.runner = data['runner']
-        self.start_env()
 
+        if hasattr(self, 'function_name') and isinstance(self.function_name, dict):
+            self.function_name = self.function_name[
+                {
+                    'python-27': 'python',
+                    'python-3': 'python',
+                    'js-node': 'js'
+                }
+                [self.runner]
+            ]
+
+        self.start_env()
         api.add_process_listener(REQ, PROCESS_ENDED, self.process_req_ended)
 
     def start_env(self):
@@ -50,7 +62,7 @@ class CheckiOReferee(object):
                          prefix=REQ,
                          controller_type=SIMPLE,
                          callback=self.run_success,
-                         errback=self.fail_cur_step,
+                         errback=self.run_fail,
                          add_close_builtins=self.add_close_builtins,
                          add_allowed_modules=self.add_allowed_modules,
                          remove_allowed_modules=self.remove_allowed_modules,
@@ -63,6 +75,9 @@ class CheckiOReferee(object):
 
         self.current_step += 1
         self.test_current_step()
+
+    def run_fail(self, data):
+        api.fail(self.current_step)
 
     def test_current_step(self):
         self.current_test = self.get_current_test()
