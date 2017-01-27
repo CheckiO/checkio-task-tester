@@ -33,6 +33,7 @@ class CenterClientProtocol(basic.LineReceiver):
 
     def connectionMade(self):
         print('Connected.')
+        print('Now open {}'.format(S.URL_MISSION_INFO))
         global CON
         CON = self
 

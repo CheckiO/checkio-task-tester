@@ -65,7 +65,7 @@ TESTER_KEY = config['Main']['tester_key']
 
 SHOW_FULL_LOGS = False
 
-URL_MISSION_INFO = 'https://%s/mission/tester/' % DOMAIN
-URL_MISSION_SOLVE = 'https://%s/mission/tester/solve/' % DOMAIN
+URL_MISSION_INFO = 'https://%s/mission/tester/' % DOMAIN_CONFIG['domain']
+URL_MISSION_SOLVE = 'https://%s/mission/tester/solve/' % DOMAIN_CONFIG['domain']
 
 INIT_REPO = 'https://github.com/CheckiO/checkio-mission-template.git'
