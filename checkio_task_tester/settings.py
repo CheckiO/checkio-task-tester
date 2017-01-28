@@ -5,6 +5,9 @@ import configparser
 PY3 = sys.version_info[0] == 3
 if PY3:
     raw_input = input
+    path_to_python3 = sys.executable
+else:
+    path_to_python3 = '/usr/local/bin/python3'
 
 
 CUR_DIR = os.path.dirname(__file__)
@@ -59,7 +62,7 @@ CENTER_SERVER_PORT = config['Main'].get('server_port', DOMAIN_CONFIG['server_por
 
 CENTER_UCH_PORT = config['Main'].get('local_port', 2323)
 
-PYTHON_3 = config['Main'].get('path_to_python3', '/usr/local/bin/python3') 
+PYTHON_3 = config['Main'].get('path_to_python3', path_to_python3) 
 
 TESTER_KEY = config['Main']['tester_key']
 
