@@ -3,7 +3,7 @@ import sys
 from os.path import abspath, dirname, join
 from setuptools import setup, find_packages
 
-if sys.version_info > (3,5):
+if sys.version_info >= (3,6):
     sys.exit('Sorry, The last supported Python version is 3.5')
 
 
