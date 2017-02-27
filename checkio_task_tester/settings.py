@@ -21,8 +21,8 @@ AVAILABLE_DOMAINS = {
     },
     'js': {
         'domain': 'js.checkio.org',
-        'server_port': 2326,
-        'server_host': 'test-debug.checkio.org'
+        'server_port': 2345,
+        'server_host': 'py-tester.checkio.org'
     }
 }
 
@@ -32,16 +32,32 @@ config = configparser.ConfigParser()
 config_filename = os.path.join(os.path.expanduser("~"), '.checkio_task_tester.ini')
 if not os.path.exists(config_filename):
     config.add_section('Main')
-    print('Config file %s was not found' % config_filename)
+    print('Config file {} was not found'.format(config_filename))
     print('We will need to go through a short configuration process')
 
+    print('Which domain you want to use for testing? (first two letters are needed)')
+    for dom, conf in AVAILABLE_DOMAINS.items():
+        print('[{}] - {}'.format(dom, conf['domain']))
+    print('by default:{}'.format(DOMAIN))
+
+    while True:
+        new_domain = raw_input('First two letters of the domain[{}]:'.format(DOMAIN)).strip()
+        if not new_domain:
+            break
+        if new_domain not in AVAILABLE_DOMAINS:
+            continue
+        DOMAIN = new_domain
+        break
+
     print('What is your TESTER_KEY?')
-    print('You can find one on https://%s/mission/add/' % AVAILABLE_DOMAINS[DOMAIN]['domain'])
+    print('You can find one on https://{}/mission/add/'.format(AVAILABLE_DOMAINS[DOMAIN]['domain']))
     while True:
         TESTER_KEY = raw_input('TESTER_KEY:').strip()
         if not TESTER_KEY:
             continue
         break
+
+
     config['Main']['domain'] = DOMAIN
     config['Main']['tester_key'] = TESTER_KEY
 
